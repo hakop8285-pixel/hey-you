@@ -72,6 +72,12 @@
   .heart-fly { position: absolute; font-size: 20px; pointer-events: none; animation: fly 1s ease-out forwards; }
   @keyframes fly { to { transform: translateY(-120px) scale(1.4); opacity: 0; } }
   .reaction { font-family: var(--hand); font-size: 16px; text-align: center; min-height: 22px; margin: 14px 0 0; color: var(--cta); }
+  .itin { list-style: none; padding: 0; margin: 10px 0 4px; }
+  .itin li { font-size: 15px; padding: 8px 0; border-bottom: 2px dotted var(--blush-2); display: flex; gap: 8px; opacity: 0; transform: translateY(6px); animation: lineIn .4s ease forwards; }
+  .itin li b { color: var(--cta); }
+  @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
+  .signoff { font-family: var(--hand); text-align: center; margin: 14px 0 16px; }
+  .email-link { display: block; text-align: center; font-size: 13px; margin-top: 10px; color: var(--rose); }
 </style>
 </head>
 <body>
@@ -166,6 +172,18 @@
     }
   }
 
+  function buildSummary() {
+    return [
+      `💌 It's a date, ${CONFIG.YOUR_NAME}!`,
+      `Day: ${answers.day}`,
+      `Time: ${answers.time}`,
+      `Doing: ${answers.activity}`,
+      `Moral support: ${answers.plusOne}`,
+      `How it ends: ${answers.ending}`,
+      `— from ${CONFIG.HER_NAME}`
+    ].join("\n");
+  }
+
   function renderCurrent() {
     const type = STEPS[step];
     if (type === "cover") return renderCover();
@@ -184,6 +202,7 @@
     });
     if (type === "plusOne") return renderPlusOne();
     if (type === "ending") return renderEnding();
+    if (type === "payoff") return renderPayoff();
     stage.innerHTML = "<p class='prompt'>step: " + type + "</p>"; // temporary until later tasks
   }
 
@@ -280,6 +299,33 @@
         setTimeout(() => goToStep(7), 750);
       };
     });
+  }
+
+  function renderPayoff() {
+    setMascotMood("ecstatic");
+    const rows = [
+      ["Day", answers.day],
+      ["Time", answers.time],
+      ["Doing", answers.activity],
+      ["Moral support", answers.plusOne],
+      ["How it ends", answers.ending]
+    ];
+    stage.innerHTML = `
+      <p class="prompt">It's a date. Here's the damage:</p>
+      <ul class="itin">${rows.map((r, i) =>
+        `<li style="animation-delay:${i * 0.18}s"><b>${r[0]}:</b><span>${r[1] ?? "—"}</span></li>`).join("")}
+      </ul>
+      <p class="signoff">can't wait. — ${CONFIG.YOUR_NAME}</p>
+      <button class="btn primary" id="send">send this to ${CONFIG.YOUR_NAME} →</button>
+      <a class="email-link" id="email-link" href="#">email it instead</a>`;
+
+    const body = encodeURIComponent(buildSummary());
+    const phone = CONFIG.YOUR_PHONE.replace(/[^+\d]/g, "");
+    document.getElementById("send").onclick = () => {
+      window.location.href = `sms:${phone}?&body=${body}`;
+    };
+    const mail = document.getElementById("email-link");
+    mail.href = `mailto:${CONFIG.YOUR_EMAIL}?subject=${encodeURIComponent("It's a date 💌")}&body=${body}`;
   }
 
   goToStep(0);
