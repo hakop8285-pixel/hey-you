@@ -69,6 +69,8 @@
   #mascot.mood-shy { transform: translateY(2px); }
   .cover-big { font-family: var(--hand); font-size: 30px; text-align: center; margin: 8px 0 2px; }
   .cover-small { font-size: 15px; text-align: center; opacity: 0.8; margin: 0 0 22px; }
+  .heart-fly { position: absolute; font-size: 20px; pointer-events: none; animation: fly 1s ease-out forwards; }
+  @keyframes fly { to { transform: translateY(-120px) scale(1.4); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -149,9 +151,24 @@
     renderDots();
   }
 
+  function heartBurst(n = 14) {
+    const card = document.getElementById("card");
+    for (let i = 0; i < n; i++) {
+      const h = document.createElement("span");
+      h.className = "heart-fly";
+      h.textContent = ["💕", "💖", "💗", "🩷"][i % 4];
+      h.style.left = (20 + Math.random() * 80) + "%";
+      h.style.top = (40 + Math.random() * 30) + "%";
+      h.style.animationDelay = (Math.random() * 0.25) + "s";
+      card.appendChild(h);
+      setTimeout(() => h.remove(), 1300);
+    }
+  }
+
   function renderCurrent() {
     const type = STEPS[step];
     if (type === "cover") return renderCover();
+    if (type === "question") return renderQuestion();
     stage.innerHTML = "<p class='prompt'>step: " + type + "</p>"; // temporary until later tasks
   }
 
@@ -162,6 +179,35 @@
       <p class="cover-small">…aka ${CONFIG.HER_NAME}</p>
       <button class="btn primary" id="enter">Enter</button>`;
     document.getElementById("enter").onclick = () => goToStep(1);
+  }
+
+  const NO_LABELS = ["No", "are you sure?", "that's not a no…", "ok, yes 🥺"];
+  function renderQuestion() {
+    setMascotMood("idle");
+    stage.innerHTML = `
+      <p class="prompt">You. Me. A date.</p>
+      <p class="sub">I already know the answer — but go ahead and make it official. 😏</p>
+      <button class="btn primary" id="yes">Yes 💕</button>
+      <button class="btn" id="no">No</button>`;
+    let noStage = 0;
+    document.getElementById("yes").onclick = () => {
+      setMascotMood("ecstatic");
+      heartBurst();
+      setTimeout(() => goToStep(2), 750);
+    };
+    const noBtn = document.getElementById("no");
+    noBtn.onclick = () => {
+      noStage++;
+      if (noStage >= NO_LABELS.length - 1) {
+        noBtn.textContent = NO_LABELS[NO_LABELS.length - 1];
+        setMascotMood("ecstatic");
+        heartBurst();
+        setTimeout(() => goToStep(2), 750);
+      } else {
+        noBtn.textContent = NO_LABELS[noStage];
+        setMascotMood("crushed");
+      }
+    };
   }
 
   goToStep(0);
