@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Hey you 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Gloria+Hallelujah&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #FFF6E9;
+    --blush: #FBEAF0;
+    --blush-2: #F4C0D1;
+    --mascot: #F4A6BE;
+    --coral: #F0997B;
+    --cta: #D4537E;
+    --rose: #993556;
+    --sans: "Fredoka", system-ui, sans-serif;
+    --hand: "Gloria Hallelujah", cursive;
+    --line: 3px solid var(--rose);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: var(--sans);
+    background: var(--blush);
+    color: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100dvh; padding: 16px;
+  }
+  #card {
+    width: 100%; max-width: 360px;
+    background: var(--cream);
+    border: var(--line);
+    border-radius: 26px;
+    padding: 22px 20px 20px;
+    position: relative; overflow: hidden;
+  }
+  #stage { min-height: 360px; }
+  .prompt { font-family: var(--hand); font-size: 22px; line-height: 1.35; text-align: center; margin: 6px 0 4px; }
+  .sub { font-size: 13px; text-align: center; opacity: 0.75; margin: 0 0 18px; }
+  .btn {
+    display: block; width: 100%;
+    font-family: var(--sans); font-weight: 500; font-size: 16px;
+    border: var(--line); border-radius: 16px;
+    padding: 12px; margin: 10px 0 0; text-align: center;
+    background: var(--cream); color: var(--rose); cursor: pointer;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn.primary { background: var(--cta); color: var(--cream); }
+  #dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  #dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--blush-2); transition: background .2s; }
+  #dots span.on { background: var(--rose); }
+</style>
+</head>
+<body>
+  <div id="card">
+    <div id="mascot-slot"></div>
+    <div id="stage"></div>
+    <div id="dots"></div>
+  </div>
+<script>
+  const CONFIG = {
+    HER_NAME: "Milly",
+    YOUR_NAME: "Jack",
+    YOUR_PHONE: "+10000000000",            /* TODO Jack: put your real number here */
+    YOUR_EMAIL: "jackantony01@yahoo.com",
+    FRIEND_REF: "backup",
+    days: ["Friday", "Saturday", "Sunday", "honestly whenever, I'm flexible (don't read into it)"],
+    times: ["5pm — responsible, respectable", "7pm — peak dinner, peak vibes", "9pm — mysterious & a little dangerous", "you decide, I trust you (terrifying)"],
+    activities: [
+      "🍝 Dinner somewhere I'll pretend the prices don't scare me",
+      "⛳ Mini golf, so you can witness my fake athletic confidence",
+      "☕ Coffee + a walk — the \"I actually want to talk to you\" option",
+      "🚗 A drive with a playlist I curated way too aggressively",
+      "🎬 Movie, so we can not-talk together comfortably"
+    ]
+  };
+
+  const answers = { day: null, time: null, activity: null, plusOne: null, ending: null };
+
+  const STEPS = ["cover", "question", "day", "time", "activity", "plusOne", "ending", "payoff"];
+  let step = 0;
+
+  const stage = document.getElementById("stage");
+  const dotsEl = document.getElementById("dots");
+
+  function renderDots() {
+    dotsEl.innerHTML = STEPS.map((_, i) => `<span class="${i <= step ? "on" : ""}"></span>`).join("");
+  }
+
+  function goToStep(i) {
+    step = i;
+    renderCurrent();
+    renderDots();
+  }
+
+  function renderCurrent() {
+    stage.innerHTML = "<p class='prompt'>scaffold ok — step " + step + "</p>";
+  }
+
+  goToStep(0);
+</script>
+</body>
+</html>
