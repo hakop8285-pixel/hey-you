@@ -71,6 +71,8 @@
   .cover-small { font-size: 15px; text-align: center; opacity: 0.8; margin: 0 0 22px; }
   .heart-fly { position: absolute; font-size: 20px; pointer-events: none; animation: fly 1s ease-out forwards; }
   @keyframes fly { to { transform: translateY(-120px) scale(1.4); opacity: 0; } }
+  .tap-spark { position: absolute; font-size: 14px; pointer-events: none; transform: translate(-50%, -50%); will-change: transform, opacity; animation: spark .6s ease-out forwards; }
+  @keyframes spark { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.3); opacity: 0; } }
   .reaction { font-family: var(--hand); font-size: 16px; text-align: center; min-height: 22px; margin: 14px 0 0; color: var(--cta); }
   .itin { list-style: none; padding: 0; margin: 10px 0 4px; }
   .itin li { font-size: 15px; padding: 8px 0; border-bottom: 2px dotted var(--blush-2); display: flex; gap: 8px; opacity: 0; transform: translateY(6px); animation: lineIn .4s ease forwards; }
@@ -186,6 +188,31 @@
       setTimeout(() => h.remove(), 2500);
     });
   }
+
+  function tapBurst(clientX, clientY) {
+    const card = document.getElementById("card");
+    const rect = card.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const glyphs = ["💕", "✨", "💗", "🩷", "✨", "💖"];
+    for (let i = 0; i < 6; i++) {
+      const s = document.createElement("span");
+      s.className = "tap-spark";
+      s.textContent = glyphs[i % glyphs.length];
+      s.style.left = x + "px";
+      s.style.top = y + "px";
+      const ang = (Math.PI * 2 * i) / 6 + Math.random() * 0.6;
+      const dist = 24 + Math.random() * 24;
+      s.style.setProperty("--dx", (Math.cos(ang) * dist) + "px");
+      s.style.setProperty("--dy", (Math.sin(ang) * dist - 8) + "px");
+      card.appendChild(s);
+      setTimeout(() => s.remove(), 650);
+    }
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".btn");
+    if (b && e.clientX) tapBurst(e.clientX, e.clientY);
+  });
 
   function buildSummary() {
     return [
