@@ -77,7 +77,6 @@
   .itin li b { color: var(--cta); }
   @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
   .signoff { font-family: var(--hand); text-align: center; margin: 14px 0 16px; }
-  .email-link { display: block; text-align: center; font-size: 13px; margin-top: 10px; color: var(--rose); }
   #stage { animation: stageIn .35s ease; }
   @keyframes stageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @media (max-width: 380px) { #card { padding: 18px 16px; } .cover-big { font-size: 26px; } .prompt { font-size: 20px; } }
@@ -111,8 +110,6 @@
   const CONFIG = {
     HER_NAME: "Milly",
     YOUR_NAME: "Jack",
-    YOUR_PHONE: "+10000000000",            /* TODO Jack: put your real number here */
-    YOUR_EMAIL: "jackantony01@yahoo.com",
     FRIEND_REF: "backup",
     days: ["Friday", "Saturday", "Sunday", "honestly whenever, I'm flexible (don't read into it)"],
     times: ["5pm — responsible, respectable", "7pm — peak dinner, peak vibes", "9pm — mysterious & a little dangerous", "you decide, I trust you (terrifying)"],
@@ -335,16 +332,28 @@
         `<li style="animation-delay:${i * 0.18}s"><b>${r[0]}:</b><span>${r[1] ?? "—"}</span></li>`).join("")}
       </ul>
       <p class="signoff">can't wait. — ${CONFIG.YOUR_NAME}</p>
-      <button class="btn primary" id="send">send this to ${CONFIG.YOUR_NAME} →</button>
-      <a class="email-link" id="email-link" href="#">email it instead</a>`;
+      <button class="btn primary" id="copy">Copy my answers 💌</button>
+      <p class="reaction" id="copy-note">screenshot this, or copy it and paste it back to me 😏</p>`;
 
-    const body = encodeURIComponent(buildSummary());
-    const phone = CONFIG.YOUR_PHONE.replace(/[^+\d]/g, "");
-    document.getElementById("send").onclick = () => {
-      window.location.href = `sms:${phone}?&body=${body}`;
+    document.getElementById("copy").onclick = async () => {
+      const text = buildSummary();
+      const note = document.getElementById("copy-note");
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (_) {}
+        ta.remove();
+      }
+      note.textContent = "copied! now paste it in our chat 💕";
+      setMascotMood("ecstatic");
+      heartBurst(8);
     };
-    const mail = document.getElementById("email-link");
-    mail.href = `mailto:${CONFIG.YOUR_EMAIL}?subject=${encodeURIComponent("It's a date 💌")}&body=${body}`;
   }
 
   goToStep(0);
