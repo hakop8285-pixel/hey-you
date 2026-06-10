@@ -53,11 +53,43 @@
   #dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
   #dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--blush-2); transition: background .2s; }
   #dots span.on { background: var(--rose); }
+  #mascot { display: block; margin: 0 auto -4px; width: 130px; height: 120px; }
+  #mascot .eye-shut { display: none; }
+  #mascot.blink .eye-open { display: none; }
+  #mascot.blink .eye-shut { display: inline; }
+  #mascot .arm { transform-origin: 104px 56px; }
+  @keyframes bob { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-5px); } }
+  @keyframes wave { 0%,100%{ transform: rotate(0deg); } 50%{ transform: rotate(-22deg); } }
+  #mascot.mood-idle { animation: bob 3s ease-in-out infinite; }
+  #mascot.mood-confident { animation: bob 2.4s ease-in-out infinite; }
+  #mascot.mood-confident .arm { animation: wave 1.2s ease-in-out infinite; }
+  #mascot.mood-ecstatic { animation: bob 0.5s ease-in-out infinite; }
+  #mascot.mood-crushed { transform: translateY(6px) rotate(-3deg); }
+  #mascot.mood-shy .cheek { fill: var(--coral); opacity: 1; }
+  #mascot.mood-shy { transform: translateY(2px); }
 </style>
 </head>
 <body>
   <div id="card">
-    <div id="mascot-slot"></div>
+    <div id="mascot-slot">
+      <svg id="mascot" class="mood-idle" viewBox="0 0 130 120" role="img" aria-label="Pebble the heart mascot">
+        <path d="M65 108 C 18 76, 6 46, 28 27 C 44 13, 62 22, 65 40 C 68 22, 86 13, 102 27 C 124 46, 112 76, 65 108 Z" fill="var(--mascot)" stroke="var(--rose)" stroke-width="4.5" stroke-linejoin="round"/>
+        <g class="eye-open">
+          <ellipse cx="50" cy="52" rx="8" ry="9" fill="#fff" stroke="var(--rose)" stroke-width="3"/>
+          <ellipse cx="80" cy="52" rx="8" ry="9" fill="#fff" stroke="var(--rose)" stroke-width="3"/>
+          <circle cx="51" cy="54" r="3.4" fill="#3a1622"/>
+          <circle cx="81" cy="54" r="3.4" fill="#3a1622"/>
+        </g>
+        <g class="eye-shut">
+          <path d="M42 53 Q50 48 58 53" fill="none" stroke="var(--rose)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M72 53 Q80 48 88 53" fill="none" stroke="var(--rose)" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <ellipse class="cheek" cx="40" cy="66" rx="6" ry="4" fill="var(--coral)" opacity="0.8"/>
+        <ellipse class="cheek" cx="90" cy="66" rx="6" ry="4" fill="var(--coral)" opacity="0.8"/>
+        <path id="mouth" d="M58 68 Q65 74 72 68" fill="none" stroke="var(--rose)" stroke-width="3" stroke-linecap="round"/>
+        <path class="arm" d="M104 58 Q116 54 114 44" fill="none" stroke="var(--rose)" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
     <div id="stage"></div>
     <div id="dots"></div>
   </div>
@@ -86,6 +118,24 @@
 
   const stage = document.getElementById("stage");
   const dotsEl = document.getElementById("dots");
+  const mascot = document.getElementById("mascot");
+  const mouth = document.getElementById("mouth");
+  const MOUTHS = {
+    idle:      "M58 68 Q65 74 72 68",
+    confident: "M56 68 Q65 76 74 67",
+    ecstatic:  "M55 66 Q65 80 75 66",
+    crushed:   "M58 72 Q65 66 72 72",
+    smug:      "M57 69 Q66 73 73 66",
+    shy:       "M60 70 Q65 73 70 70"
+  };
+  function setMascotMood(mood) {
+    mascot.className = "mood-" + mood;
+    mouth.setAttribute("d", MOUTHS[mood] || MOUTHS.idle);
+  }
+  setInterval(() => {
+    mascot.classList.add("blink");
+    setTimeout(() => mascot.classList.remove("blink"), 160);
+  }, 3500);
 
   function renderDots() {
     dotsEl.innerHTML = STEPS.map((_, i) => `<span class="${i <= step ? "on" : ""}"></span>`).join("");
