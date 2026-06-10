@@ -67,6 +67,8 @@
   #mascot.mood-crushed { transform: translateY(6px) rotate(-3deg); }
   #mascot.mood-shy .cheek { fill: var(--coral); opacity: 1; }
   #mascot.mood-shy { transform: translateY(2px); }
+  .cover-big { font-family: var(--hand); font-size: 30px; text-align: center; margin: 8px 0 2px; }
+  .cover-small { font-size: 15px; text-align: center; opacity: 0.8; margin: 0 0 22px; }
 </style>
 </head>
 <body>
@@ -148,7 +150,18 @@
   }
 
   function renderCurrent() {
-    stage.innerHTML = "<p class='prompt'>scaffold ok — step " + step + "</p>";
+    const type = STEPS[step];
+    if (type === "cover") return renderCover();
+    stage.innerHTML = "<p class='prompt'>step: " + type + "</p>"; // temporary until later tasks
+  }
+
+  function renderCover() {
+    setMascotMood("confident");
+    stage.innerHTML = `
+      <p class="cover-big">Wassup baddie 😎</p>
+      <p class="cover-small">…aka ${CONFIG.HER_NAME}</p>
+      <button class="btn primary" id="enter">Enter</button>`;
+    document.getElementById("enter").onclick = () => goToStep(1);
   }
 
   goToStep(0);
