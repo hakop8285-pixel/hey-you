@@ -78,6 +78,9 @@
   @keyframes lineIn { to { opacity: 1; transform: translateY(0); } }
   .signoff { font-family: var(--hand); text-align: center; margin: 14px 0 16px; }
   .email-link { display: block; text-align: center; font-size: 13px; margin-top: 10px; color: var(--rose); }
+  #stage { animation: stageIn .35s ease; }
+  @keyframes stageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 380px) { #card { padding: 18px 16px; } .cover-big { font-size: 26px; } .prompt { font-size: 20px; } }
 </style>
 </head>
 <body>
@@ -172,6 +175,21 @@
     }
   }
 
+  function ambientHearts() {
+    const card = document.getElementById("card");
+    [..."💗💕"].forEach((c, i) => {
+      const h = document.createElement("span");
+      h.className = "heart-fly";
+      h.textContent = c;
+      h.style.left = (15 + i * 55) + "%";
+      h.style.top = "85%";
+      h.style.opacity = "0.5";
+      h.style.animationDuration = "2.4s";
+      card.appendChild(h);
+      setTimeout(() => h.remove(), 2500);
+    });
+  }
+
   function buildSummary() {
     return [
       `💌 It's a date, ${CONFIG.YOUR_NAME}!`,
@@ -185,6 +203,7 @@
   }
 
   function renderCurrent() {
+    stage.style.animation = "none"; void stage.offsetWidth; stage.style.animation = "";
     const type = STEPS[step];
     if (type === "cover") return renderCover();
     if (type === "question") return renderQuestion();
@@ -213,6 +232,7 @@
       <p class="cover-small">…aka ${CONFIG.HER_NAME}</p>
       <button class="btn primary" id="enter">Enter</button>`;
     document.getElementById("enter").onclick = () => goToStep(1);
+    ambientHearts();
   }
 
   const NO_LABELS = ["No", "are you sure?", "that's not a no…", "ok, yes 🥺"];
