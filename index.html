@@ -169,6 +169,18 @@
     const type = STEPS[step];
     if (type === "cover") return renderCover();
     if (type === "question") return renderQuestion();
+    if (type === "day") return renderChoice({
+      key: "day", nextStep: 3, prompt: "When are you free to be charmed?",
+      options: CONFIG.days
+    });
+    if (type === "time") return renderChoice({
+      key: "time", nextStep: 4, prompt: "And what time?",
+      options: CONFIG.times
+    });
+    if (type === "activity") return renderChoice({
+      key: "activity", nextStep: 5, prompt: "So what are we actually doing?",
+      options: CONFIG.activities
+    });
     stage.innerHTML = "<p class='prompt'>step: " + type + "</p>"; // temporary until later tasks
   }
 
@@ -208,6 +220,21 @@
         setMascotMood("crushed");
       }
     };
+  }
+
+  function renderChoice({ key, prompt, sub, options, nextStep, mood }) {
+    setMascotMood(mood || "idle");
+    stage.innerHTML =
+      `<p class="prompt">${prompt}</p>` +
+      (sub ? `<p class="sub">${sub}</p>` : "") +
+      options.map((o, i) => `<button class="btn" data-i="${i}">${o}</button>`).join("");
+    stage.querySelectorAll("button[data-i]").forEach(btn => {
+      btn.onclick = () => {
+        answers[key] = options[Number(btn.dataset.i)];
+        setMascotMood("ecstatic");
+        setTimeout(() => goToStep(nextStep), 450);
+      };
+    });
   }
 
   goToStep(0);
