@@ -34,10 +34,11 @@
     background: var(--cream);
     border: var(--line);
     border-radius: 26px;
-    padding: 22px 20px 20px;
+    padding: 22px 20px 46px;
     position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
   }
-  #stage { min-height: 360px; }
+  #stage { min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
   .prompt { font-family: var(--hand); font-size: 22px; line-height: 1.35; text-align: center; margin: 6px 0 4px; }
   .sub { font-size: 13px; text-align: center; opacity: 0.75; margin: 0 0 18px; }
   .btn {
@@ -50,7 +51,7 @@
   }
   .btn:active { transform: scale(0.96); }
   .btn.primary { background: var(--cta); color: var(--cream); }
-  #dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  #dots { display: flex; gap: 6px; justify-content: center; position: absolute; left: 0; right: 0; bottom: 16px; }
   #dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--blush-2); transition: background .2s; }
   #dots span.on { background: var(--rose); }
   #mascot { display: block; margin: 0 auto -4px; width: 130px; height: 120px; }
@@ -81,7 +82,17 @@
   .signoff { font-family: var(--hand); text-align: center; margin: 14px 0 16px; }
   #stage { animation: stageIn .35s ease; }
   @keyframes stageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  @media (max-width: 380px) { #card { padding: 18px 16px; } .cover-big { font-size: 26px; } .prompt { font-size: 20px; } }
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    #card {
+      max-width: none;
+      min-height: calc(100dvh - 20px);
+      padding-top: max(22px, calc(env(safe-area-inset-top) + 8px));
+      padding-bottom: max(46px, calc(env(safe-area-inset-bottom) + 30px));
+    }
+    #dots { bottom: max(16px, calc(env(safe-area-inset-bottom) + 8px)); }
+  }
+  @media (max-width: 340px) { .cover-big { font-size: 26px; } .prompt { font-size: 20px; } }
 </style>
 </head>
 <body>
