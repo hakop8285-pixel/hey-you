@@ -71,6 +71,7 @@
   .cover-small { font-size: 15px; text-align: center; opacity: 0.8; margin: 0 0 22px; }
   .heart-fly { position: absolute; font-size: 20px; pointer-events: none; animation: fly 1s ease-out forwards; }
   @keyframes fly { to { transform: translateY(-120px) scale(1.4); opacity: 0; } }
+  .reaction { font-family: var(--hand); font-size: 16px; text-align: center; min-height: 22px; margin: 14px 0 0; color: var(--cta); }
 </style>
 </head>
 <body>
@@ -181,6 +182,8 @@
       key: "activity", nextStep: 5, prompt: "So what are we actually doing?",
       options: CONFIG.activities
     });
+    if (type === "plusOne") return renderPlusOne();
+    if (type === "ending") return renderEnding();
     stage.innerHTML = "<p class='prompt'>step: " + type + "</p>"; // temporary until later tasks
   }
 
@@ -233,6 +236,48 @@
         answers[key] = options[Number(btn.dataset.i)];
         setMascotMood("ecstatic");
         setTimeout(() => goToStep(nextStep), 450);
+      };
+    });
+  }
+
+  function renderPlusOne() {
+    setMascotMood("smug");
+    stage.innerHTML = `
+      <p class="prompt">Bringing ${CONFIG.FRIEND_REF} for moral support again? 👀</p>
+      <button class="btn" data-v="yes">Yes, obviously</button>
+      <button class="btn" data-v="no">No, I'm brave now</button>
+      <p class="reaction" id="reaction"></p>`;
+    const reaction = document.getElementById("reaction");
+    stage.querySelectorAll("button[data-v]").forEach(btn => {
+      btn.onclick = () => {
+        const yes = btn.dataset.v === "yes";
+        answers.plusOne = yes ? "bringing backup" : "flying solo";
+        reaction.textContent = yes
+          ? "understood. she may supervise from a safe distance."
+          : "brave. I respect it.";
+        setMascotMood(yes ? "smug" : "ecstatic");
+        setTimeout(() => goToStep(6), 1100);
+      };
+    });
+  }
+
+  function renderEnding() {
+    setMascotMood("shy");
+    const opts = [
+      { label: "🤗 side hug", val: "a side hug", mood: "smug" },
+      { label: "😚 kiss on the cheek", val: "a kiss on the cheek", mood: "shy" },
+      { label: "😏 we'll find out", val: "we'll find out 😏", mood: "shy" }
+    ];
+    stage.innerHTML =
+      `<p class="prompt">And how does the night end…?</p>` +
+      opts.map((o, i) => `<button class="btn" data-i="${i}">${o.label}</button>`).join("");
+    stage.querySelectorAll("button[data-i]").forEach(btn => {
+      btn.onclick = () => {
+        const o = opts[Number(btn.dataset.i)];
+        answers.ending = o.val;
+        setMascotMood(o.mood);
+        heartBurst(8);
+        setTimeout(() => goToStep(7), 750);
       };
     });
   }
